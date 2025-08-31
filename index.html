@@ -3,45 +3,87 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kidpreneur Home</title>
+  <title>Kidpreneur - Home</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
       background: linear-gradient(135deg, #1a1c2c, #2a2f4a);
       color: white;
-      margin: 0;
-      padding: 1rem 2rem;
     }
     nav {
+      background: rgba(49, 30, 95, 0.85);
+      padding: 1rem 2rem;
       display: flex;
-      justify-content: flex-end;
-      padding: 1rem 0;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 0 30px #7a00ffcc;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      backdrop-filter: blur(10px);
+      border-radius: 0 0 24px 24px;
     }
-    #logout-btn {
-      cursor: pointer;
-      padding: 10px 20px;
+    .logo {
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: #ff33bb;
+      text-decoration: none;
+      text-shadow: 0 0 12px #ff33bb, 0 0 30px #ff0096;
+    }
+    ul.nav-links {
+      list-style: none;
+      display: flex;
+      gap: 1.5rem;
+      margin: 0;
+      padding: 0;
+      align-items: center;
+    }
+    ul.nav-links li a, ul.nav-links li button {
+      color: #fff;
+      text-decoration: none;
+      font-weight: 600;
       font-size: 1rem;
-      border-radius: 12px;
+      background: none;
       border: none;
-      background: linear-gradient(145deg, #7a00ff, #ff0096);
-      color: white;
-      box-shadow: 0 6px 15px rgba(122, 0, 255, 0.7), 0 0 20px #ff0096, inset 0 -4px 6px #5800b2;
-      text-shadow: 0 0 7px #ff5ca2, 0 0 14px #ff0096, 0 0 21px #ff33bb;
-      transition: box-shadow 0.3s ease;
+      cursor: pointer;
+      padding: 0.4rem 1rem;
+      border-radius: 12px;
+      transition: background 0.3s ease, box-shadow 0.3s ease;
     }
-    #logout-btn:hover, #logout-btn:focus {
-      box-shadow: 0 8px 25px rgba(255, 0, 150, 0.9), 0 0 30px #ff0096, inset 0 -6px 8px #ff33bb;
+    ul.nav-links li a:hover,
+    ul.nav-links li button:hover,
+    ul.nav-links li a:focus,
+    ul.nav-links li button:focus {
+      background: linear-gradient(145deg, #7a00ff, #ff0096);
+      box-shadow:
+        0 6px 15px rgba(122, 0, 255, 0.7),
+        0 0 20px #ff0096,
+        inset 0 -4px 6px #5800b2;
       outline: none;
+      color: #fff;
     }
   </style>
 </head>
 <body>
   <nav>
-    <button id="logout-btn">Logout</button>
+    <a href="index.html" class="logo">Kidpreneur</a>
+    <ul class="nav-links">
+      <li><a href="index.html">Home</a></li>
+      <li><a href="submission.html">Submission</a></li>
+      <li><a href="explore.html">Explore Ideas</a></li>
+      <li><a href="contact.html">Contact Us</a></li>
+      <li><a href="challenges.html">Challenges</a></li>
+      <li id="auth-link-container">
+        <!-- Login or Logout button inserted here -->
+      </li>
+    </ul>
   </nav>
 
-  <h1>Welcome to Kidpreneur</h1>
-  <p>This is your protected homepage.</p>
+  <main style="padding: 2rem;">
+    <h1>Welcome to Kidpreneur!</h1>
+    <p>Explore ideas, submit your startup projects, and take challenges!</p>
+  </main>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
@@ -60,23 +102,52 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
 
-    // Redirect to login if not authenticated
-    onAuthStateChanged(auth, user => {
-      if (!user) {
-        window.location.href = 'login.html';
-      }
-    });
+    const authContainer = document.getElementById('auth-link-container');
 
-    // Logout button
-    const logoutBtn = document.getElementById('logout-btn');
-    logoutBtn.addEventListener('click', async () => {
-      try {
-        await signOut(auth);
-        alert('You have been logged out.');
-        window.location.href = 'login.html';
-      } catch (error) {
-        console.error('Logout error:', error);
-        alert('Error logging out: ' + error.message);
+    function createLoginLink() {
+      const loginLink = document.createElement('a');
+      loginLink.href = 'login.html';
+      loginLink.textContent = 'Login';
+      loginLink.setAttribute('aria-label', 'Login');
+      return loginLink;
+    }
+
+    function createLogoutButton(user) {
+      const logoutButton = document.createElement('button');
+      logoutButton.textContent = 'Logout';
+      logoutButton.setAttribute('aria-label', 'Logout');
+      logoutButton.addEventListener('click', async () => {
+        try {
+          await signOut(auth);
+          // After logout, replace button with login link
+          updateAuthUI(null);
+          alert('You have been logged out.');
+          window.location.href = 'login.html';
+        } catch (error) {
+          console.error('Logout error:', error);
+          alert('Error logging out. Please try again.');
+        }
+      });
+      return logoutButton;
+    }
+
+    function updateAuthUI(user) {
+      authContainer.innerHTML = '';
+      if (user) {
+        authContainer.appendChild(createLogoutButton(user));
+      } else {
+        authContainer.appendChild(createLoginLink());
+      }
+    }
+
+    // Protect this page - redirect to login if not authenticated
+    onAuthStateChanged(auth, user => {
+      updateAuthUI(user);
+      if (!user) {
+        // Redirect to login page if not logged in
+        if (window.location.pathname !== '/login.html') {
+          window.location.href = 'login.html';
+        }
       }
     });
   </script>
