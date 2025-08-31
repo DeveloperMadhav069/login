@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kidpreneur Home</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #1a1c2c, #2a2f4a);
+      color: white;
+      margin: 0;
+      padding: 1rem 2rem;
+    }
+    nav {
+      display: flex;
+      justify-content: flex-end;
+      padding: 1rem 0;
+    }
+    #logout-btn {
+      cursor: pointer;
+      padding: 10px 20px;
+      font-size: 1rem;
+      border-radius: 12px;
+      border: none;
+      background: linear-gradient(145deg, #7a00ff, #ff0096);
+      color: white;
+      box-shadow: 0 6px 15px rgba(122, 0, 255, 0.7), 0 0 20px #ff0096, inset 0 -4px 6px #5800b2;
+      text-shadow: 0 0 7px #ff5ca2, 0 0 14px #ff0096, 0 0 21px #ff33bb;
+      transition: box-shadow 0.3s ease;
+    }
+    #logout-btn:hover, #logout-btn:focus {
+      box-shadow: 0 8px 25px rgba(255, 0, 150, 0.9), 0 0 30px #ff0096, inset 0 -6px 8px #ff33bb;
+      outline: none;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <button id="logout-btn">Logout</button>
+  </nav>
+
+  <h1>Welcome to Kidpreneur</h1>
+  <p>This is your protected homepage.</p>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-app.js";
+    import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.22.2/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyDcwsWKNqy9-sJH5ZjWhkE2Buz4X_Gpk4w",
+      authDomain: "kidpreneur-fc00a.firebaseapp.com",
+      projectId: "kidpreneur-fc00a",
+      storageBucket: "kidpreneur-fc00a.firebasestorage.app",
+      messagingSenderId: "764380304058",
+      appId: "1:764380304058:web:731b533b62ea0d6817e883",
+      measurementId: "G-JRF353FQN2"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // Redirect to login if not authenticated
+    onAuthStateChanged(auth, user => {
+      if (!user) {
+        window.location.href = 'login.html';
+      }
+    });
+
+    // Logout button
+    const logoutBtn = document.getElementById('logout-btn');
+    logoutBtn.addEventListener('click', async () => {
+      try {
+        await signOut(auth);
+        alert('You have been logged out.');
+        window.location.href = 'login.html';
+      } catch (error) {
+        console.error('Logout error:', error);
+        alert('Error logging out: ' + error.message);
+      }
+    });
+  </script>
+</body>
+</html>
