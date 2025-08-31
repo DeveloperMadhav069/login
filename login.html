@@ -3,20 +3,20 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kidpreneur Login</title>
+  <title>Kidpreneur - Login</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      height: 100vh;
       background: linear-gradient(135deg, #1a1c2c, #2a2f4a);
-      color: white;
       display: flex;
       justify-content: center;
       align-items: center;
-      height: 100vh;
-      margin: 0;
+      color: white;
     }
     #login-container {
-      background: #311e5f;
+      background: rgba(49, 30, 95, 0.85);
       padding: 3rem 4rem;
       border-radius: 24px;
       box-shadow: 0 0 40px #ff33bbcc, inset 0 0 30px #7a00ff88;
@@ -24,10 +24,18 @@
       max-width: 400px;
       width: 90vw;
     }
+    h1 {
+      margin-bottom: 1rem;
+      font-weight: 700;
+      font-size: 2rem;
+      color: #ff33bb;
+      text-shadow: 0 0 18px #ff33bb, 0 0 40px #ff0096;
+    }
     button {
+      margin-top: 2rem;
       cursor: pointer;
       padding: 12px 20px;
-      font-size: 1.1rem;
+      font-size: 1.2rem;
       border-radius: 12px;
       border: none;
       background: linear-gradient(145deg, #7a00ff, #ff0096);
@@ -35,7 +43,7 @@
       box-shadow: 0 6px 15px rgba(122, 0, 255, 0.7), 0 0 20px #ff0096, inset 0 -4px 6px #5800b2;
       text-shadow: 0 0 7px #ff5ca2, 0 0 14px #ff0096, 0 0 21px #ff33bb;
       width: 100%;
-      max-width: 300px;
+      max-width: 320px;
     }
     button:hover, button:focus {
       box-shadow: 0 8px 25px rgba(255, 0, 150, 0.9), 0 0 30px #ff0096, inset 0 -6px 8px #ff33bb;
@@ -46,7 +54,7 @@
 <body>
   <div id="login-container">
     <h1>Welcome to Kidpreneur</h1>
-    <p>Continue with your Google account to get started.</p>
+    <p>Sign in with your Google account to get started.</p>
     <button id="google-signin-btn">Continue with Google</button>
   </div>
 
@@ -77,12 +85,12 @@
         alert(`Welcome, ${user.displayName}! Redirecting...`);
         window.location.href = 'index.html';
       } catch (error) {
-        console.error('Error during sign-in:', error);
+        console.error('Sign in error:', error);
         alert('Login failed: ' + error.message);
       }
     });
 
-    // Redirect if already logged in
+    // Redirect logged-in users away from login page to home
     onAuthStateChanged(auth, user => {
       if (user) {
         window.location.href = 'index.html';
